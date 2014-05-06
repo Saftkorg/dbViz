@@ -8,8 +8,6 @@ if (!$con) {
 }
 
 mysqli_select_db($con, "dbviz");
-//$sql="SELECT * FROM user WHERE id = '".$q."'";
-//$sql="SELECT * FROM people";
 $sql = "SHOW TABLES";
 $result = mysqli_query($con, $sql);
 
@@ -27,10 +25,8 @@ foreach ($tables as $i => $value) {
     for ($j = 0; $j < $fields; $j++) {
 	echo "\t" . mysqli_fetch_field_direct($result, $j)->name . "\n";
     }
-
 }
 
-
-
 mysqli_close($con);
-?> 
+?>
+ 

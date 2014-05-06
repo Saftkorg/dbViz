@@ -6,13 +6,13 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>dbViz</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">  
         <script>
-            function showUser(str) {
-                if (str == "") {
-                    document.getElementById("txtHint").innerHTML = "";
+            function showTables(str) {
+                if (str === "") {
+                    document.getElementById("txtCont").innerHTML = "";
                     return;
                 }
                 if (window.XMLHttpRequest) {
@@ -22,11 +22,11 @@ and open the template in the editor.
                     xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
                 }
                 xmlhttp.onreadystatechange = function() {
-                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                        document.getElementById("txtHint").innerHTML = xmlhttp.responseText;
+                    if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                        document.getElementById("txtCont").innerHTML = xmlhttp.responseText;
                     }
-                }
-                xmlhttp.open("GET", "getuser.php?q=" + str, true);
+                };
+                xmlhttp.open("GET", "gettables.php?q=" + str, true);
                 xmlhttp.send();
             }
         </script>
@@ -34,16 +34,13 @@ and open the template in the editor.
     <body>
 
         <form>
-            <select name="users" onchange="showUser(this.value)">
-                <option value="">Select a person:</option>
-                <option value="1">Peter Griffin</option>
-                <option value="2">Lois Griffin</option>
-                <option value="3">Glenn Quagmire</option>
-                <option value="4">Joseph Swanson</option>
+            <select name="dbs" onchange="showTables(this.value)">
+                <option value="">Select a database</option>
+                <option value="1">dbViz</option>
             </select>
         </form>
         <br>
-        <div id="txtHint"><b>Person info will be listed here.</b></div>
+        <div id="txtCont"><b>Person info will be listed here.</b></div>
 
     </body>
 </html> 
