@@ -18,20 +18,30 @@ while ($row = mysqli_fetch_array($result)) {
 
 foreach ($tables as $i => $value) {
     
-    echo "<table class=\"table\">";
+    echo "<table id=\"" . $value . "\" class=\"table\">";
     echo "<thead><tr><th>" . $value . "</th></tr></thead>";
+    
     echo "<tbody>";
+    
+    $sql = "SHOW KEYS FROM " . $value . " WHERE Key_name = 'PRIMARY'";
+    $result = mysqli_query($con, $sql);
+    $primaryKeys = array();
+    while ($row = mysqli_fetch_array($result)) {
+	//echo "\t primarykey: " . $row['Column_name'] . "</br>";
+	$primaryKeys[] = $row['Column_name'];
+    }
     $sql = "SELECT * FROM " . $value . "";
     $result = mysqli_query($con, $sql);
     $fields = mysqli_field_count($con);
     for ($j = 0; $j < $fields; $j++) {
-	echo "<tr><td>" . mysqli_fetch_field_direct($result, $j)->name . "</td></tr>";
+	echo "<tr><td";
+	$name = mysqli_fetch_field_direct($result, $j)->name;
+	if(in_array($name, $primaryKeys)){
+	    echo " class=\"primaryKey\"";
+	}
+	echo ">" . $name . "</td></tr>";
     }
-    $sql = "SHOW KEYS FROM " . $value . " WHERE Key_name = 'PRIMARY'";
-    $result = mysqli_query($con, $sql);
-    while ($row = mysqli_fetch_array($result)) {
-	//echo "\t primarykey: " . $row['Column_name'] . "</br>";
-    }
+
     
     
     //$sql = "SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '" . $value ."'";
@@ -40,7 +50,8 @@ foreach ($tables as $i => $value) {
     while ($row = mysqli_fetch_array($result)) {
 	//echo "\t foreignkey: " . $row['COLUMN_NAME'] . " ref to: " . $row['REFERENCED_TABLE_NAME'] . " -> " . $row['REFERENCED_COLUMN_NAME'] . "</br>";
     }
-    echo "</tbody>";
+    echo "</tbody></table>";
+    
 }
 
 mysqli_close($con);

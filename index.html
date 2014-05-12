@@ -9,8 +9,10 @@ and open the template in the editor.
         <title>dbViz</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">  
-        <script src="js/jquery-ui-1.10.4/js/jquery-1.10.2.js"></script>
-        <script src="js/jquery-ui-1.10.4/js/jquery-ui-1.10.4.js"></script>
+        <link rel="stylesheet" href="css/index.css" />
+        <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.4.css" />
+        <script src="js/jquery-1.10.2.js"></script>
+        <script src="js/jquery-ui-1.10.4.js"></script>
         <script src="js/index.js"></script>
     </head>
     <body>
@@ -22,17 +24,18 @@ and open the template in the editor.
             </select>
         </form>
         <br>
-        <div id="container" onmousewheel="scroll(event);"  style="width: 300px; height: 200px; overflow:auto; background-color: #00ff00;">
-            <div id="overlay"  style=" position:relative;zoom:1;-webkit-transform: translate(1px,1px);">
-                <svg height="210" width="200" style="position: absolute;">
-                <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2;"></line>
+        <div id="container" onmousewheel="scroll(event);"  style="width: 600px; height: 400px; overflow:hidden;position:relative; background-color: #00ff00;">
+            
+                <svg id="svgContainer" style="zoom:1;">
+                    <g id="svgGroup" style="-webkit-transform: translate(0px, 0px);">
+                        <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2;"></line>
+                    </g>
                 </svg>
-                <div id="txtCont"><b>Person info will be listed here.</b>
-        
+                <div id="txtCont" style="zoom:1;-webkit-transform: translate(0px, 0px);"><b>Person info will be listed here.</b>
                 </div>
-            </div>
-            <div id="underlay" style="width: inherit; height: inherit;" onmouseout="stopDrag();" onmousedown="startDrag(event);" onmousemove="duringDrag(event);" onmouseup="stopDrag();"></div>
+            
+            <div id="underlay" onmouseout="stopDrag();" onmousedown="startDrag(event);" onmousemove="duringDrag(event);" onmouseup="stopDrag();"></div>
         </div>
-        
+        <div id="status" onclick="testPost();" style="width: 100px; height: 50px; background-color: red;"></div>
     </body>
 </html> 

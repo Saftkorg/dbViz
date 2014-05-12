@@ -1,2 +1,4 @@
 nbproject/
-js/jquery-ui-1.10.4/
+js/jquery*.js
+development-bundle/
+css/ui-lightness/
