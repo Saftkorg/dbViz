@@ -13,7 +13,7 @@
 	    echo $v;
 	}
     }
-    
+    echo "hej";
 ?>
 
 <!--</div>
