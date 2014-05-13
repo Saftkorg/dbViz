@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>dbViz</title>
+		
+		<link href="css/ui-lightness/jquery-ui-1.10.4.css" rel="stylesheet">
+		<script src="js/jquery-1.10.2.js"></script>
+		<script src="js/jquery-ui-1.10.4.js"></script>
+		
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">  
+        <script>
+            function showTables(str) {
+                if (str === "") {
+                    document.getElementById("txtCont").innerHTML = "";
+                    return;
+                }
+                if (window.XMLHttpRequest) {
+                    // code for IE7+, Firefox, Chrome, Opera, Safari
+                    xmlhttp = new XMLHttpRequest();
+                } else { // code for IE6, IE5
+                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                        document.getElementById("txtCont").innerHTML = xmlhttp.responseText;
+                    }
+                };
+                xmlhttp.open("GET", "gettables.php?q=" + str, true);
+                xmlhttp.send();
+            }
+        </script>
+    </head>
+    <body>
+<table>
+    <tr><td><button class="dbbtn">New Database</button></td>
+    <td><button class="create-table">New Table</button></td></tr>
+</table>
+ 
+<script>
+$(function() {
+    $( "#dialog" ).dialog({ autoOpen: false });
+  });
+  
+  $(function() {
+	$( "button" ).button();
+  });
+
+$(document).ready(function(){
+    $('.dbbtn').click(function(){
+        $('#dialog').dialog('open');
+    });
+});
+
+  $(function() {
+    var name = $( "#name" ),
+      numColumns = $( "#numColumns" ),
+      allFields = $( [] ).add( name ).add( numColumns );
+//      tips = $( ".validateTips" );
+
+	$( "#table-dialog" ).dialog({
+      autoOpen: false,
+      height: 300,
+      width: 350,
+      modal: true,
+      buttons: {
+        "Create new table": function() {
+          var bValid = true;
+          allFields.removeClass( "ui-state-error" );
+
+          if ( bValid ) {
+            $( "#users tbody" ).append( "<tr>" +
+              "<td>" + name.val() + "</td>" +
+              "<td>" + numColumns.val() + "</td>" +
+            "</tr>" );
+            $( this ).dialog( "close" );
+          }
+        },
+        Cancel: function() {
+          $( this ).dialog( "close" );
+        }
+      },
+      close: function() {
+        allFields.val( "" ).removeClass( "ui-state-error" );
+      }
+    });
+	});
+	
+   $(function() {
+	$( "create-table" ).button();
+  });
+ 
+ $(document).ready(function(){
+    $('.create-table').click(function(){
+        var test = $('#table-dialog');
+        $('#table-dialog').dialog('open');
+    });
+});
+
+</script>
+
+<div id="dialog" title="Basic dialog">
+	<label>Name: </label>
+	<input>
+</div>
+
+<div id="table-dialog" title="Create new user">
+  <!--p class="validateTips">All form fields are required.</p-->
+ 
+  <form>
+  <fieldset>
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all">
+    <label for="numColumns">Number of columns</label>
+    <input type="text" name="numColumns" id="numColumns" value="" class="text ui-widget-content ui-corner-all">
+  </fieldset>
+  </form>
+</div>
+        <form>
+            <select name="dbs" onchange="showTables(this.value)">
+                <option value="">Select a database</option>
+                <option value="1">dbViz</option>
+            </select>
+        </form>
+        <br>
+        <div id="txtCont"><b>Person info will be listed here.</b></div>
+
+    </body>
+</html> 

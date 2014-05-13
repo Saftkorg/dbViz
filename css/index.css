@@ -26,3 +26,16 @@ and open the template in the editor.
     pointer-events: none;
     z-index: 0;
 }
+
+#container{
+    width: 600px;
+    height: 400px;
+    overflow:hidden;
+    position:relative;
+    background-color: #00ff00;
+}
+
+line{
+    stroke:rgb(255,0,0);
+    stroke-width:2;
+}
