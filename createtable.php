@@ -6,7 +6,13 @@ if (mysqli_connect_errno()) {
 }
 $tableName = strval($_POST["name"]);
 // Create table
-$sql="CREATE TABLE " . $tableName;
+$sql="CREATE TABLE " . $tableName . " ("; 
+foreach(array_chunk($_POST["columnNames"], 2) as &$values) {
+	$sql = $sql . $values[0] . " " . $values[0] . ", ";
+}
+$sql = substr($sql, 0, -2);
+$sql = $sql . ");";
+//$sql="CREATE TABLE " . $tableName . " (" . $columnName1 . " " . $columnType1 . ", " . $columnName2 . " " . $columnType2 . ");";
 
 // Execute query
 if (mysqli_query($con,$sql)) {

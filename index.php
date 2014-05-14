@@ -62,13 +62,13 @@ and open the template in the editor.
 	    <!--p class = "validateTips">All form fields are required.</p-->
 
 	    <form action="createtable.php" method="post">
+	    Name: <input type="text" name="name" class="name ui-widget-content ui-corner-all" /><br>
 		<fieldset>
-		    <label for="name">Name</label>
-		    <input type="text" name="name" class="name ui-widget-content ui-corner-all" />
-		    <label for="numColumns">Number of columns</label>
-		    <input type="number" pattern="\d+" min="0" step="1" pattern="\d+" />
+		    Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>
+		    Column type: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>
 		</fieldset>
 		<input type="submit">
+		<button type="button" id="addButton">Add column</button>
 	    </form>
 	</div>
         <br>

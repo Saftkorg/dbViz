@@ -28,18 +28,32 @@ $(document).ready(function() {
     //	    numColumns = $("#numColumns"),
     //	    allFields = $([]).add(name).add(numColumns);
     //     tips = $( ".validateTips" );
-
+	var inputWrapper = $("#table-dialog fieldset");
+	var addButton = $("#addButton");
+	var x = inputWrapper.length;
+	var fieldCount = 1;
+	
+	$(addButton).click(function() {
+		fieldCount++;
+		$(inputWrapper).append('Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>'
+		    + 'Column type: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>');
+		x++;
+    });
+	
     $("#table-dialog").dialog({
 	autoOpen: false,
 	height: 300,
-	width: 350,
+	width: 300,
 	modal: true,
 	close: function() {
 	    $( "#table-dialog fieldset input" ).val("").removeClass("ui-state-error");
+		$("#table-dialog fieldset").empty();
+		fieldCount = 1;
+		$(inputWrapper).append('Column Name: <input type="text" name="columnName' + fieldCount + '" class="name ui-widget-content ui-corner-all" /><br>'
+		    + 'Column type: <input type="text" name="columnType' + fieldCount + '" class="name ui-widget-content ui-corner-all" /><br>');
 	}
-    });
-
-
+	});
+	
     $('#create-table').click(function() {
 	$('#table-dialog').dialog('open');
     });
