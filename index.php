@@ -81,12 +81,12 @@ and open the template in the editor.
 	    <div id="txtCont" style="zoom:1;-webkit-transform: translate(0px, 0px);">
 		<table style="width: 200px;">
 		    <tbody>
-		    <tr>
-			<td><b>Person info will be listed here.</b></td>
-		</tr>
-		</tbody>
+			<tr>
+			    <td><b>Choose a database</b></td>
+			</tr>
+		    </tbody>
 		</table>
-		<div >
+		<div id="menuContainer">
 		    <ul id="menu">
 			
 		    </ul>

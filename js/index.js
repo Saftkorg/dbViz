@@ -48,6 +48,8 @@ $(document).ready(function() {
     $('#create-database').click(function() {
 	$('#database-dialog').dialog('open');
     });
+
+
 });
 
 
@@ -152,6 +154,7 @@ function showTables(str) {
 		    'line': newLine,
 		    'table': table1,
 		    'field': field1,
+		    'constraint': tableField["constraint"]
 		});
 	    });
 	});
@@ -190,6 +193,8 @@ function showTables(str) {
 	    }});
 
 	$("#txtCont td").click(function(event) {
+	    $("#menu").remove();
+	    $("#menuContainer").append("<ul id=\"menu\"></ul>");
 	    if ($(this).hasClass("selected")) {
 		$(this).toggleClass("selected");
 		//hide menu?
@@ -197,17 +202,41 @@ function showTables(str) {
 		var selected = $(".selected");
 		$(".selected").toggleClass("selected");
 		$(this).toggleClass("selected");
-		
-		var parent = event.target.offsetParent;
-		/*
-		var sendThis = {'choices[]': ["jon", "susan"]};
-		var posting = $.post("phpinfo.php", sendThis);
-		posting.done(function(data) {
-		    var content = $(data).find("#c");
-		    var cont = $("div").find("#status");
-		    $("#status").append(content);
+		//$("#menu").append("<li><a href=\"#\">Remove constraint</a><ul>");
+		var menuHtml = "<li><a >Remove constraint</a>";
+		var table = event.target.offsetParent.id;
+		var field = event.target.innerHTML;
+		if (table in constraints && field in constraints[table] && constraints[table][field].length>0) {
+		    menuHtml += "<ul><li> ";
+		    var tmpConst = constraints[table][field];
+		    for (key in tmpConst) {
+			var constEntry = tmpConst[key];
+			menuHtml += "<div onclick=\"rmConstraint(event,\'" + table + "\',\'" + field + "\',\'" + constEntry.table + "\',\'" + constEntry.field + "\',\'" + constEntry.constraint + "\');\">" + constEntry.table + ":" + constEntry.field + "</div>";
+		    }
+		    ;
+		    menuHtml += "</li> </ul>";
+
+
+		}
+		menuHtml += "</li>";
+		$("#menu").append(menuHtml);
+		$("#menu").menu();
+		$("#menu").position({
+		    my: "left top",
+		    at: "right top",
+		    of: event,
+		    collision: "fit"
 		});
-		*/
+
+		/*
+		 var sendThis = {'choices[]': ["jon", "susan"]};
+		 var posting = $.post("phpinfo.php", sendThis);
+		 posting.done(function(data) {
+		 var content = $(data).find("#c");
+		 var cont = $("div").find("#status");
+		 $("#status").append(content);
+		 });
+		 */
 
 		//show and move menu?
 	    }
@@ -241,8 +270,79 @@ function showTables(str) {
 //    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 //    xmlhttp.send("q=" + str);
 }
-function testPost() {
 
+function rmConstraint(event, table1, field1, table2, field2, constraint) {
+
+    $("#status").append(table1 + field1 + constraint);
+
+    //var rmConstraint = constraints[table][field][0]['constraint'];
+    var sendThis = {'table': table1, 'constraint': constraint, 'db': db};
+    var posting = $.post("removeConstraint.php", sendThis,
+	    function(data) {
+		var response = jQuery.parseJSON(data);
+		if (typeof (response.success) != "undefined") {
+
+		    $(event.target).remove();
+		    var tmpConst = constraints[table1][field1];
+		    var index = -1;
+		    for (key in tmpConst) {
+			if (tmpConst[key].constraint == constraint) {
+			    $(tmpConst[key].line).remove();
+			    index = key;
+			}
+		    }
+		    if (index != -1) {
+			constraints[table1][field1].splice(index, 1);
+		    }
+		    tmpConst = constraints[table2][field2];
+		    index = -1;
+		    for (key in tmpConst) {
+			if (tmpConst[key].constraint == constraint) {
+			    index = key;
+			}
+		    }
+		    if (index != -1) {
+			constraints[table2][field2].splice(index, 1);
+		    }
+		    $("#status").html("yeay");
+		} else {
+		    sendThis['table'] = table2;
+		    $.post("removeConstraint.php", sendThis,
+			    function(data) {
+				var response = jQuery.parseJSON(data);
+				if (typeof (response.success) != "undefined") {
+				    $(event.target).remove();
+				    var tmpConst = constraints[table1][field1];
+				    var index = -1;
+				    for (key in tmpConst) {
+					if (tmpConst[key].constraint == constraint) {
+					    $(tmpConst[key].line).remove();
+					    index = key;
+					}
+				    }
+				    if (index != -1) {
+					constraints[table1][field1].splice(index, 1);
+				    }
+				    tmpConst = constraints[table2][field2];
+				    index = -1;
+				    for (key in tmpConst) {
+					if (tmpConst[key].constraint == constraint) {
+					    index = key;
+					}
+				    }
+				    if (index != -1) {
+					constraints[table2][field2].splice(index, 1);
+				    }
+				    
+				    $("#status").html("yeay");
+				}
+			    });
+		}
+	    });
+
+}
+function testPost() {
+    $("#status").append("yeay");
 
 
     //$( "#menu" ).append("<li>test <ul><li>test1</li> </ul> </li>");

@@ -8,6 +8,12 @@ and open the template in the editor.
     Author     : Alexander
 */
 
+#menuContainer{
+    z-index: 50;
+    position: absolute;
+    width: 0px;
+    height: 0px;
+}
 #underlay {
     width: inherit;
     height: inherit;
@@ -45,27 +51,27 @@ line{
     stroke-width:2;
 }
 
-table {
+#container table {
     display: table;
     border-collapse: separate;
     border-spacing: 2px;
     border-color: gray;
 }
 
-tbody {
+#container tbody {
     display: table-row-group;
     vertical-align: middle;
     border-color: inherit;
 }
 
-tr {
+#container tr {
     display: table-row;
     vertical-align: inherit;
     border-color: inherit;
     background-color: rgb(214, 248, 201);
 }
 
-th {
+#container th {
     font-size: 1.4em;
     text-align: left;
     padding-top: 5px;
@@ -75,8 +81,13 @@ th {
     border: 1px solid #98bf21;
     padding: 3px 7px 2px 7px;
 }
-
-td {
+tbody tr{
+    cursor:pointer;
+}
+thead tr{
+    cursor:move;
+}
+#container td {
     font-size: 1.2em;
     border: 1px solid #98bf21;
     padding: 3px 7px 2px 7px;
