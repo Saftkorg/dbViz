@@ -9,6 +9,49 @@ var mouseOrgXY = [0.0, 0.0];
 var transXY = [0.0, 0.0];
 var mouseDown = false;
 var constraints = [];
+
+$(document).ready(function() {
+    //var name = $("#name");
+    $("#database-dialog").dialog({
+	autoOpen: false,
+	height: 300,
+	width: 350,
+	modal: true,
+	close: function() {
+	    //name.val("").removeClass("ui-state-error");
+	    $("#database-dialog fieldset input").val("").removeClass("ui-state-error");
+	}
+    });
+
+
+    //var name = $("#name"),
+    //	    numColumns = $("#numColumns"),
+    //	    allFields = $([]).add(name).add(numColumns);
+    //     tips = $( ".validateTips" );
+
+    $("#table-dialog").dialog({
+	autoOpen: false,
+	height: 300,
+	width: 350,
+	modal: true,
+	close: function() {
+	    $( "#table-dialog fieldset input" ).val("").removeClass("ui-state-error");
+	}
+    });
+
+
+    $('#create-table').click(function() {
+	$('#table-dialog').dialog('open');
+    });
+
+    $('#create-database').click(function() {
+	$('#database-dialog').dialog('open');
+    });
+});
+
+
+
+
 function startDrag(e) {
     e.preventDefault();
     var myDiv = document.getElementById("txtCont");
@@ -116,7 +159,7 @@ function showTables(str) {
 		    //var tableData = $(parent).data($(this).text());
 		    if (parent.id in constraints && $(this).text() in constraints[parent.id]) {
 			var field = $(this).position();
-			var width = $(this).width() / 2;
+			var width = $(this).parent().width() / 2;
 			var tmp = constraints[parent.id][$(this).text()];
 			for (key in tmp) {
 			    var tableData = tmp[key];

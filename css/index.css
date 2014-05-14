@@ -39,3 +39,39 @@ line{
     stroke:rgb(255,0,0);
     stroke-width:2;
 }
+
+table {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 2px;
+    border-color: gray;
+}
+
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+th {
+    font-size: 1.4em;
+    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    background-color: #A7C942;
+    color: #fff;
+    border: 1px solid #98bf21;
+    padding: 3px 7px 2px 7px;
+}
+
+td {
+    font-size: 1.2em;
+    border: 1px solid #98bf21;
+    padding: 3px 7px 2px 7px;
+}
