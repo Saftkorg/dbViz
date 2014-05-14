@@ -8,7 +8,7 @@ $tableName = strval($_POST["name"]);
 // Create table
 $sql="CREATE TABLE " . $tableName . " ("; 
 foreach(array_chunk($_POST["columnNames"], 2) as &$values) {
-	$sql = $sql . $values[0] . " " . $values[0] . ", ";
+	$sql = $sql . $values[0] . " " . $values[1] . ", ";
 }
 $sql = substr($sql, 0, -2);
 $sql = $sql . ");";
