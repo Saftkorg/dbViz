@@ -20,6 +20,9 @@ and open the template in the editor.
     height: 0px;
     z-index: 5;
 }
+.ui-menu { 
+    width: 150px; 
+}
 
 #svgContainer{
     position:absolute;

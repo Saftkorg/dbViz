@@ -78,7 +78,6 @@ function duringDrag(e) {
 function stopDrag() {
     if (mouseDown) {
 	mouseDown = false;
-
     }
 }
 function scroll(e) {
@@ -99,8 +98,11 @@ function scroll(e) {
 }
 function showTables(str) {
     db = str;
+    $("g").empty();
+    $("#txtCont table").remove();
+    constraints = [];
     if (str === "") {
-	document.getElementById("txtCont").innerHTML = "";
+	$("txtCont").html("");
 	return;
     }
     $.post(
@@ -108,7 +110,7 @@ function showTables(str) {
 	    {'q': str},
     function(data) {
 	var response = jQuery.parseJSON(data);
-	$("#txtCont").html(response.html);
+	$("#txtCont").append(response.html);
 	$.each(response.data, function(table1, value) {
 	    $.each(value, function(field1, tableField) {
 		var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -130,24 +132,27 @@ function showTables(str) {
 		    'y': newLine.attributes.y1,
 		    'x2': newLine.attributes.x2,
 		    'line': newLine,
-		    'table': tableField[0],
-		    'field': tableField[1]});
+		    'table': tableField["table"],
+		    'field': tableField["column"],
+		    'constraint': tableField["constraint"]
+		});
 		//$('#' + tableField[0]).data(tableField[1]).append( {
 
-		if (!(tableField[0] in constraints)) {
-		    constraints[tableField[0]] = new Array();
+		if (!(tableField["table"] in constraints)) {
+		    constraints[tableField["table"]] = new Array();
 		}
-		if (!(tableField[1] in constraints[tableField[0]])) {
-		    constraints[tableField[0]][tableField[1]] = new Array();
+		if (!(tableField["column"] in constraints[tableField["table"]])) {
+		    constraints[tableField["table"]][tableField["column"]] = new Array();
 		}
 
-		constraints[tableField[0]][tableField[1]].push({
+		constraints[tableField["table"]][tableField["column"]].push({
 		    'x': newLine.attributes.x2,
 		    'y': newLine.attributes.y2,
 		    'x2': newLine.attributes.x1,
 		    'line': newLine,
 		    'table': table1,
-		    'field': field1});
+		    'field': field1,
+		});
 	    });
 	});
 	$('#txtCont table').draggable({
@@ -165,7 +170,9 @@ function showTables(str) {
 			var tmp = constraints[parent.id][$(this).text()];
 			for (key in tmp) {
 			    var tableData = tmp[key];
-			    if (parseInt(tableData.x2.value) > (width + parseInt(tableData.x.value))) {
+
+			    var x1 = parentPos.left;
+			    if (parseInt(tableData.x2.value) > (width + parentPos.left)) {
 				tableData.x.value = (parentPos.left + field.left + (width * 2));
 			    } else {
 				tableData.x.value = (parentPos.left + field.left);
@@ -181,7 +188,7 @@ function showTables(str) {
 		//$('line')[0].attributes.y1.value = (parentPos.top + elementPos.top + 8);
 		//$('line')[0].attributes.x1.value = (parentPos.left + elementPos.left);
 	    }});
-	
+
 	$("#txtCont td").click(function(event) {
 	    if ($(this).hasClass("selected")) {
 		$(this).toggleClass("selected");
@@ -190,6 +197,17 @@ function showTables(str) {
 		var selected = $(".selected");
 		$(".selected").toggleClass("selected");
 		$(this).toggleClass("selected");
+		
+		var parent = event.target.offsetParent;
+		/*
+		var sendThis = {'choices[]': ["jon", "susan"]};
+		var posting = $.post("phpinfo.php", sendThis);
+		posting.done(function(data) {
+		    var content = $(data).find("#c");
+		    var cont = $("div").find("#status");
+		    $("#status").append(content);
+		});
+		*/
 
 		//show and move menu?
 	    }
@@ -224,10 +242,18 @@ function showTables(str) {
 //    xmlhttp.send("q=" + str);
 }
 function testPost() {
-    var parentPos = $("#houses").position();
-    var elementPos = $("#houses .foreignKey").position();
-    $("#status").html("top " + (parentPos.top + elementPos.top) + " left " +
-	    (parentPos.left + elementPos.left));
+
+
+
+    //$( "#menu" ).append("<li>test <ul><li>test1</li> </ul> </li>");
+    //$( "#menu" ).menu();
+
+    /*
+     var parentPos = $("#houses").position();
+     var elementPos = $("#houses .foreignKey").position();
+     $("#status").html("top " + (parentPos.top + elementPos.top) + " left " +
+     (parentPos.left + elementPos.left));
+     */
     /*
      var sendThis = {'choices[]':["jon","susan"]};
      var posting = $.post("phpinfo.php", sendThis);

@@ -66,7 +66,7 @@ and open the template in the editor.
 		    <label for="name">Name</label>
 		    <input type="text" name="name" class="name ui-widget-content ui-corner-all" />
 		    <label for="numColumns">Number of columns</label>
-		    <input type="number" pattern="\d+" min="0" step="1" pattern="\d+" />
+		    <input type="number" min="0" step="1"  />
 		</fieldset>
 		<input type="submit">
 	    </form>
@@ -78,8 +78,21 @@ and open the template in the editor.
 	    <g id="svgGroup" style="-webkit-transform: translate(0px, 0px);">
 	    </g>
 	    </svg>
-	    <div id="txtCont" style="zoom:1;-webkit-transform: translate(0px, 0px);"><div style="width:400px;"><b>Person info will be listed here.</b></div>
+	    <div id="txtCont" style="zoom:1;-webkit-transform: translate(0px, 0px);">
+		<table style="width: 200px;">
+		    <tbody>
+		    <tr>
+			<td><b>Person info will be listed here.</b></td>
+		</tr>
+		</tbody>
+		</table>
+		<div >
+		    <ul id="menu">
+			
+		    </ul>
+		</div>
 	    </div>
+
 
             <div id="underlay" onmouseout="stopDrag();" onmousedown="startDrag(event);" onmousemove="duringDrag(event);" onmouseup="stopDrag();"></div>
         </div>

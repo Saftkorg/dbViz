@@ -30,14 +30,17 @@ foreach ($tables as $i => $value) {
 	$primaryKeys[] = $row['Column_name'];
     }
     //$sql = "SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '" . $value ."'";
-    $sql = "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME "
+    $sql = "SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME "
 	    . "FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_NAME = '"
 	    . $value . "' AND REFERENCED_TABLE_NAME IS NOT NULL";
     $result = mysqli_query($con, $sql);
     $tmpForeign;
     while ($row = mysqli_fetch_array($result)) {
 	//echo "\t foreignkey: " . $row['COLUMN_NAME'] . " ref to: " . $row['REFERENCED_TABLE_NAME'] . " -> " . $row['REFERENCED_COLUMN_NAME'] . "</br>";
-	$tmpForeign[$value][$row['COLUMN_NAME']] = array($row['REFERENCED_TABLE_NAME'], $row['REFERENCED_COLUMN_NAME']);
+	$tmpForeign[$value][$row['COLUMN_NAME']] = array(
+	    "table" => $row['REFERENCED_TABLE_NAME'],
+	    "column" => $row['REFERENCED_COLUMN_NAME'],
+	    "constraint" => $row['CONSTRAINT_NAME']);
     }
 
     $sql = "SELECT * FROM " . $value . "";
