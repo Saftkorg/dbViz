@@ -16,6 +16,8 @@ and open the template in the editor.
 }
 #txtCont {
     position: absolute;
+    width: 0px;
+    height: 0px;
     z-index: 5;
 }
 
@@ -57,6 +59,7 @@ tr {
     display: table-row;
     vertical-align: inherit;
     border-color: inherit;
+    background-color: rgb(214, 248, 201);
 }
 
 th {

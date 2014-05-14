@@ -78,7 +78,7 @@ and open the template in the editor.
 	    <g id="svgGroup" style="-webkit-transform: translate(0px, 0px);">
 	    </g>
 	    </svg>
-	    <div id="txtCont" style="zoom:1;-webkit-transform: translate(0px, 0px);"><b>Person info will be listed here.</b>
+	    <div id="txtCont" style="zoom:1;-webkit-transform: translate(0px, 0px);"><div style="width:400px;"><b>Person info will be listed here.</b></div>
 	    </div>
 
             <div id="underlay" onmouseout="stopDrag();" onmousedown="startDrag(event);" onmousemove="duringDrag(event);" onmouseup="stopDrag();"></div>

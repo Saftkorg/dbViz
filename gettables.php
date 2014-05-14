@@ -56,7 +56,9 @@ foreach ($tables as $i => $value) {
     }
 
     $html .= "</tbody></table>";
-    $data = $data + $tmpForeign;
+    if(isset($tmpForeign)){
+	$data = $data + $tmpForeign;
+    }
 }
 
 

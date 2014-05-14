@@ -9,6 +9,7 @@ var mouseOrgXY = [0.0, 0.0];
 var transXY = [0.0, 0.0];
 var mouseDown = false;
 var constraints = [];
+var db = "";
 
 $(document).ready(function() {
     //var name = $("#name");
@@ -35,7 +36,7 @@ $(document).ready(function() {
 	width: 350,
 	modal: true,
 	close: function() {
-	    $( "#table-dialog fieldset input" ).val("").removeClass("ui-state-error");
+	    $("#table-dialog fieldset input").val("").removeClass("ui-state-error");
 	}
     });
 
@@ -97,6 +98,7 @@ function scroll(e) {
     mySvg.style.zoom = zoom;
 }
 function showTables(str) {
+    db = str;
     if (str === "") {
 	document.getElementById("txtCont").innerHTML = "";
 	return;
@@ -179,7 +181,19 @@ function showTables(str) {
 		//$('line')[0].attributes.y1.value = (parentPos.top + elementPos.top + 8);
 		//$('line')[0].attributes.x1.value = (parentPos.left + elementPos.left);
 	    }});
+	
+	$("#txtCont td").click(function(event) {
+	    if ($(this).hasClass("selected")) {
+		$(this).toggleClass("selected");
+		//hide menu?
+	    } else {
+		var selected = $(".selected");
+		$(".selected").toggleClass("selected");
+		$(this).toggleClass("selected");
 
+		//show and move menu?
+	    }
+	});
 
 	//constraints = constraints.concat(response.data);
     }
