@@ -30,18 +30,18 @@ $(document).ready(function() {
     //	    numColumns = $("#numColumns"),
     //	    allFields = $([]).add(name).add(numColumns);
     //     tips = $( ".validateTips" );
-	var inputWrapper = $("#table-dialog fieldset");
-	var addButton = $("#addButton");
-	var x = inputWrapper.length;
-	var fieldCount = 1;
-	
-	$(addButton).click(function() {
-		fieldCount++;
-		$(inputWrapper).append('Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>'
-		    + 'Column type: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>');
-		x++;
+    var inputWrapper = $("#table-dialog fieldset");
+    var addButton = $("#addButton");
+    var x = inputWrapper.length;
+    var fieldCount = 1;
+
+    $(addButton).click(function() {
+	fieldCount++;
+	$(inputWrapper).append('Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>'
+		+ 'Column type: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>');
+	x++;
     });
-	
+
     $("#table-dialog").dialog({
 	autoOpen: false,
 	height: 300,
@@ -49,15 +49,15 @@ $(document).ready(function() {
 	modal: true,
 	close: function() {
 
-	    $( "#table-dialog fieldset input" ).val("").removeClass("ui-state-error");
-		$("#table-dialog fieldset").empty();
-		fieldCount = 1;
-		$(inputWrapper).append('Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>'
+	    $("#table-dialog fieldset input").val("").removeClass("ui-state-error");
+	    $("#table-dialog fieldset").empty();
+	    fieldCount = 1;
+	    $(inputWrapper).append('Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>'
 		    + 'Column type: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>');
 
 	}
-	});
-	
+    });
+
     $('#create-table').click(function() {
 	$('#table-dialog').dialog('open');
     });
@@ -66,24 +66,123 @@ $(document).ready(function() {
 	$('#database-dialog').dialog('open');
     });
 
-	$('#table-dialog form').submit(function(event) {
-		$.ajax({
-			type: 'POST',
-			url: 'createtable.php',
-			data: $(this).serialize()
-			}).done(function(data) {
-				var response = jQuery.parseJSON(data);
-				if(typeof (response.tableHTML) != "undefined") {
-					$(response.tableHTML).insertAfter("#menuContainer");
-				} else {
-					$("#status").html("Create Table Failed");
+    $('#table-dialog form').submit(function(event) {
+	$.ajax({
+	    type: 'POST',
+	    url: 'createtable.php',
+	    data: $(this).serialize()
+	}).done(function(data) {
+	    var response = jQuery.parseJSON(data);
+	    if (typeof (response.tableHTML) != "undefined") {
+
+		$(response.tableHTML).insertAfter("#menuContainer");
+		addRemoveToTable($('#' + response.tableName)[0]);
+
+
+		$('#' + response.tableName).draggable({
+		    scroll: true,
+		    snap: true,
+		    drag: function(event) {
+			$("#menu").remove();
+			var parentPos = $(this).position();
+			var parent = this;
+			$("#" + this.id + " .foreignKey, #" + this.id + " .primaryKey").each(function(index) {
+
+			    //var tableData = $(parent).data($(this).text());
+			    if (parent.id in constraints && $(this).text() in constraints[parent.id]) {
+				var field = $(this).position();
+				var width = $(this).parent().width() / 2;
+				var tmp = constraints[parent.id][$(this).text()];
+				for (key in tmp) {
+				    var tableData = tmp[key];
+
+				    var x1 = parentPos.left;
+				    if (parseInt(tableData.x2.value) > (width + parentPos.left)) {
+					tableData.x.value = (parentPos.left + field.left + (width * 2));
+				    } else {
+					tableData.x.value = (parentPos.left + field.left);
+				    }
+
+				    tableData.y.value = (parentPos.top + field.top + 8);
 				}
-			})
-			
-			;
-		event.preventDefault();
-		$("#table-dialog").dialog('close');
-	});
+
+
+			    }
+
+			});
+			//$('line')[0].attributes.y1.value = (parentPos.top + elementPos.top + 8);
+			//$('line')[0].attributes.x1.value = (parentPos.left + elementPos.left);
+		    }});
+
+		$('#' + response.tableName).click(function(event) {
+		    if (addConstraint) {
+			adConstraint(event.target.offsetParent.id, event.target.innerHTML);
+			return;
+		    }
+		    $("#menu").remove();
+		    $("#menuContainer").append("<ul id=\"menu\"></ul>");
+		    if ($(this).hasClass("selected")) {
+			$(this).toggleClass("selected");
+			//hide menu?
+		    } else {
+			var selected = $(".selected");
+			$(".selected").toggleClass("selected");
+			$(this).toggleClass("selected");
+			//$("#menu").append("<li><a href=\"#\">Remove constraint</a><ul>");
+			var menuHtml = "<li><a >Remove constraint</a>";
+			var table = event.target.offsetParent.id;
+			var field = event.target.innerHTML;
+			if (table in constraints && field in constraints[table] && constraints[table][field].length > 0) {
+			    menuHtml += "<ul><li> ";
+			    var tmpConst = constraints[table][field];
+			    for (key in tmpConst) {
+				var constEntry = tmpConst[key];
+				menuHtml += "<a onclick=\"rmConstraint(event,\'" + table + "\',\'" + field + "\',\'" + constEntry.table + "\',\'" + constEntry.field + "\',\'" + constEntry.constraint + "\');\">" + constEntry.table + ":" + constEntry.field + "</a>";
+			    }
+			    ;
+			    menuHtml += "</li> </ul>";
+			}
+			menuHtml += "</li><li><a onclick=\"adConstraint(\'" + table + "\',\'" + field + "\')\">Add constraint</a><li>";
+
+
+			$("#menu").append(menuHtml);
+			$("#menu").menu();
+			var tmp = event;
+			$("#menu").position({
+			    my: "left top",
+			    at: "right top",
+			    of: event.target,
+			    collision: "fit"
+			});
+
+			//show and move menu?
+		    }
+		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	    } else {
+		$("#status").html("Create Table Failed");
+	    }
+	})
+
+		;
+	event.preventDefault();
+	$("#table-dialog").dialog('close');
+    });
 });
 
 
@@ -135,24 +234,24 @@ function scroll(e) {
     mySvg.style.zoom = zoom;
 }
 
-function enforceConstraint(table1,field1,table2,field2, constraint) {
-    
-    var parent1Pos = $('#'+table1).position();
-    var parent2Pos = $('#'+table2).position();
-    
-    var child1 = $('#'+table1 + " td").filter(function(idx){
+function enforceConstraint(table1, field1, table2, field2, constraint) {
+
+    var parent1Pos = $('#' + table1).position();
+    var parent2Pos = $('#' + table2).position();
+
+    var child1 = $('#' + table1 + " td").filter(function(idx) {
 	return this.innerHTML == field1;
     });
-    var child2 = $('#'+table2 + " td").filter(function(idx){
+    var child2 = $('#' + table2 + " td").filter(function(idx) {
 	return this.innerHTML == field2;
     });
-    
+
     var child1Pos = $(child1[0]).position();
     var child2Pos = $(child2[0]).position();
-    
-    
-    
-    
+
+
+
+
     var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     newLine.setAttribute('x1', (child1Pos.left));
     newLine.setAttribute('y1', (child1Pos.top));
@@ -198,7 +297,7 @@ function enforceConstraint(table1,field1,table2,field2, constraint) {
 
 function showTables(str) {
     db = str;
-	$('[name="db"]').val(db);
+    $('[name="db"]').val(db);
     $("g").empty();
     $("#txtCont table").remove();
     constraints = [];
@@ -214,7 +313,7 @@ function showTables(str) {
 	$("#txtCont").append(response.html);
 	$.each(response.data, function(table1, value) {
 	    $.each(value, function(field1, tableField) {
-		enforceConstraint(table1,field1,tableField["table"],tableField["column"],tableField["constraint"]);
+		enforceConstraint(table1, field1, tableField["table"], tableField["column"], tableField["constraint"]);
 	    });
 	});
 	$('#txtCont table').draggable({
@@ -322,13 +421,13 @@ function adConstraint(table2, field2) {
 	var posting = $.post("addConstraint.php", sendThis, function(data) {
 	    var response = jQuery.parseJSON(data);
 	    if (typeof (response.success) != "undefined") {
-		$("#"+table1+" td,#"+table2+" td").each(function(index){
+		$("#" + table1 + " td,#" + table2 + " td").each(function(index) {
 		    var hellp = $(this).html();
-		    if(($(this).html().localeCompare(field1)==0 || $(this).html().localeCompare(field2) == 0) && !$(this).hasClass("primaryKey")){
+		    if (($(this).html().localeCompare(field1) == 0 || $(this).html().localeCompare(field2) == 0) && !$(this).hasClass("primaryKey")) {
 			$(this).addClass("foreignKey");
 		    }
 		});
-		
+
 		enforceConstraint(table1, field1, table2, field2, constraint);
 
 
@@ -413,50 +512,34 @@ function rmConstraint(event, table1, field1, table2, field2, constraint) {
 }
 
 function addRemoveToAllTables() {
-	var tables = $('#txtCont table');
-	for (var i=tables.length-1; i>=0;i-=1) {
-		addRemoveToTable(tables[i]);
-	}
+    var tables = $('#txtCont table');
+    for (var i = tables.length - 1; i >= 0; i -= 1) {
+	addRemoveToTable(tables[i]);
+    }
 }
 
 function addRemoveToTable(table) {
-		var btn = document.createElement('input');
-		btn.type = "button";
-		btn.className = "btn";
-		btn.value = "Remove";
+    var btn = document.createElement('input');
+    btn.type = "button";
+    btn.className = "btn";
+    btn.value = "Remove";
 //		btn.onclick = (function(entry) {return function() {chooseUser(entry);}})(entry);
-		btn.onclick = (function() {
-		$.post(
-	    "rmTable.php",
-	    {'table': table.id, 'db': db},
-    function(data) {
-		var response = jQuery.parseJSON(data);
-		if (typeof (response.success) != "undefined") {
-			$("#" + table.id).remove();	
-			}
-		});
+    btn.onclick = (function() {
+	$.post(
+		"rmTable.php",
+		{'table': table.id, 'db': db},
+	function(data) {
+	    var response = jQuery.parseJSON(data);
+	    if (typeof (response.success) != "undefined") {
+
+		$("#" + table.id).remove();
+	    }
 	});
-	table.appendChild(btn);
+    });
+    table.appendChild(btn);
 }
 function testPost() {
     $("#status").append("yeay");
 
 
-    //$( "#menu" ).append("<li>test <ul><li>test1</li> </ul> </li>");
-    //$( "#menu" ).menu();
-
-    /*
-     var parentPos = $("#houses").position();
-     var elementPos = $("#houses .foreignKey").position();
-     $("#status").html("top " + (parentPos.top + elementPos.top) + " left " +
-     (parentPos.left + elementPos.left));
-     */
-    /*
-     var sendThis = {'choices[]':["jon","susan"]};
-     var posting = $.post("phpinfo.php", sendThis);
-     posting.done(function(data){
-     var content =  $( data ).find("#c");
-     var cont = $( "div" ).find("#status");
-     $( "#status" ).append( content );
-     });*/
 }

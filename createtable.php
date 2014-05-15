@@ -57,7 +57,7 @@ if (mysqli_query($con,$sql)) {
     }
 
     $html .= "</tbody></table>";
-	echo json_encode(array('tableHTML' => $html));
+	echo json_encode(array('tableHTML' => $html, 'tableName' => $tableName));
 } else {
   echo "Error creating table: " . mysqli_error($con);
 }
