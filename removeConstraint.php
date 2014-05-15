@@ -10,7 +10,7 @@ if ($_POST["table"] && $_POST["constraint"] && $_POST["db"]) {
 	exit();
     }
 
-    $sql = "ALTER TABLE " . $table . " DROP FOREIGN KEY " . $constraint . ";";
+    $sql = "ALTER TABLE `" . $table . "` DROP FOREIGN KEY `" . $constraint . "`;";
      
     if($con->query($sql) === TRUE){
 	echo json_encode(array('success' => "jupp"));

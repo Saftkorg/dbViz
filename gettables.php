@@ -1,6 +1,6 @@
 <?php
 
-$q = preg_replace("/[^a-zA-Z0-9]+/", "", strval($_POST['q']));
+$q = preg_replace("/[^a-zA-Z0-9_]+/", "", strval($_POST['q']));
 
 $con = mysqli_connect('127.0.0.1', 'test1', 'test1', $q);
 if (!$con) {

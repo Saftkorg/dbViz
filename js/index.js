@@ -10,6 +10,7 @@ var transXY = [0.0, 0.0];
 var mouseDown = false;
 var constraints = [];
 var db = "";
+var addConstraint = false;
 
 $(document).ready(function() {
     //var name = $("#name");
@@ -56,6 +57,8 @@ $(document).ready(function() {
 
 
 function startDrag(e) {
+    $("#menu").remove();
+    addConstraint = false;
     e.preventDefault();
     var myDiv = document.getElementById("txtCont");
     mouseOrgXY[0] = e.clientX;
@@ -98,6 +101,51 @@ function scroll(e) {
     myDiv.style.zoom = zoom;
     mySvg.style.zoom = zoom;
 }
+
+function enforceConstraint(table1,field1,table2,field2, constraint) {
+    var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    newLine.setAttribute('x1', '0');
+    newLine.setAttribute('y1', '0');
+    newLine.setAttribute('x2', '0');
+    newLine.setAttribute('y2', '0');
+    $("#svgGroup").append(newLine);
+
+    if (!(table1 in constraints)) {
+	constraints[table1] = new Array();
+    }
+    if (!(field1 in constraints[table1])) {
+	constraints[table1][field1] = new Array();
+    }
+    //$('#' + table1).data(field1, {
+    constraints[table1][field1].push({
+	'x': newLine.attributes.x1,
+	'y': newLine.attributes.y1,
+	'x2': newLine.attributes.x2,
+	'line': newLine,
+	'table': table2,
+	'field': field2,
+	'constraint': constraint
+    });
+    //$('#' + tableField[0]).data(tableField[1]).append( {
+
+    if (!(table2 in constraints)) {
+	constraints[table2] = new Array();
+    }
+    if (!(field2 in constraints[table2])) {
+	constraints[table2][field2] = new Array();
+    }
+
+    constraints[table2][field2].push({
+	'x': newLine.attributes.x2,
+	'y': newLine.attributes.y2,
+	'x2': newLine.attributes.x1,
+	'line': newLine,
+	'table': table1,
+	'field': field1,
+	'constraint': constraint
+    });
+}
+
 function showTables(str) {
     db = str;
     $("g").empty();
@@ -115,53 +163,14 @@ function showTables(str) {
 	$("#txtCont").append(response.html);
 	$.each(response.data, function(table1, value) {
 	    $.each(value, function(field1, tableField) {
-		var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-		newLine.setAttribute('x1', '0');
-		newLine.setAttribute('y1', '0');
-		newLine.setAttribute('x2', '0');
-		newLine.setAttribute('y2', '0');
-		$("#svgGroup").append(newLine);
-
-		if (!(table1 in constraints)) {
-		    constraints[table1] = new Array();
-		}
-		if (!(field1 in constraints[table1])) {
-		    constraints[table1][field1] = new Array();
-		}
-		//$('#' + table1).data(field1, {
-		constraints[table1][field1].push({
-		    'x': newLine.attributes.x1,
-		    'y': newLine.attributes.y1,
-		    'x2': newLine.attributes.x2,
-		    'line': newLine,
-		    'table': tableField["table"],
-		    'field': tableField["column"],
-		    'constraint': tableField["constraint"]
-		});
-		//$('#' + tableField[0]).data(tableField[1]).append( {
-
-		if (!(tableField["table"] in constraints)) {
-		    constraints[tableField["table"]] = new Array();
-		}
-		if (!(tableField["column"] in constraints[tableField["table"]])) {
-		    constraints[tableField["table"]][tableField["column"]] = new Array();
-		}
-
-		constraints[tableField["table"]][tableField["column"]].push({
-		    'x': newLine.attributes.x2,
-		    'y': newLine.attributes.y2,
-		    'x2': newLine.attributes.x1,
-		    'line': newLine,
-		    'table': table1,
-		    'field': field1,
-		    'constraint': tableField["constraint"]
-		});
+		enforceConstraint(table1,field1,tableField["table"],tableField["column"],tableField["constraint"]);
 	    });
 	});
 	$('#txtCont table').draggable({
 	    scroll: true,
 	    snap: true,
 	    drag: function(event) {
+		$("#menu").remove();
 		var parentPos = $(this).position();
 		var parent = this;
 		$("#" + this.id + " .foreignKey, #" + this.id + " .primaryKey").each(function(index) {
@@ -193,6 +202,10 @@ function showTables(str) {
 	    }});
 
 	$("#txtCont td").click(function(event) {
+	    if (addConstraint) {
+		adConstraint(event.target.offsetParent.id, event.target.innerHTML);
+		return;
+	    }
 	    $("#menu").remove();
 	    $("#menuContainer").append("<ul id=\"menu\"></ul>");
 	    if ($(this).hasClass("selected")) {
@@ -206,25 +219,26 @@ function showTables(str) {
 		var menuHtml = "<li><a >Remove constraint</a>";
 		var table = event.target.offsetParent.id;
 		var field = event.target.innerHTML;
-		if (table in constraints && field in constraints[table] && constraints[table][field].length>0) {
+		if (table in constraints && field in constraints[table] && constraints[table][field].length > 0) {
 		    menuHtml += "<ul><li> ";
 		    var tmpConst = constraints[table][field];
 		    for (key in tmpConst) {
 			var constEntry = tmpConst[key];
-			menuHtml += "<div onclick=\"rmConstraint(event,\'" + table + "\',\'" + field + "\',\'" + constEntry.table + "\',\'" + constEntry.field + "\',\'" + constEntry.constraint + "\');\">" + constEntry.table + ":" + constEntry.field + "</div>";
+			menuHtml += "<a onclick=\"rmConstraint(event,\'" + table + "\',\'" + field + "\',\'" + constEntry.table + "\',\'" + constEntry.field + "\',\'" + constEntry.constraint + "\');\">" + constEntry.table + ":" + constEntry.field + "</a>";
 		    }
 		    ;
 		    menuHtml += "</li> </ul>";
-
-
 		}
-		menuHtml += "</li>";
+		menuHtml += "</li><li><a onclick=\"adConstraint(\'" + table + "\',\'" + field + "\')\">Add constraint</a><li>";
+
+
 		$("#menu").append(menuHtml);
 		$("#menu").menu();
+		var tmp = event;
 		$("#menu").position({
 		    my: "left top",
 		    at: "right top",
-		    of: event,
+		    of: event.target,
 		    collision: "fit"
 		});
 
@@ -269,6 +283,41 @@ function showTables(str) {
 //    xmlhttp.open("POST", "gettables.php" , true);
 //    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 //    xmlhttp.send("q=" + str);
+}
+
+function adConstraint(table2, field2) {
+    if (addConstraint) {
+	var table1 = $(".selected")[0].offsetParent.id;
+	var field1 = $(".selected")[0].innerHTML;
+	var constraint = table1 + "_" + field1 + "_" + table2 + "_" + field2;
+	var sendThis = {
+	    'table1': table1,
+	    'field1': field1,
+	    'table2': table2,
+	    'field2': field2,
+	    'db': db,
+	    'constraint': constraint
+	};
+	var posting = $.post("addConstraint.php", sendThis, function(data) {
+	    var response = jQuery.parseJSON(data);
+	    if (typeof (response.success) != "undefined") {
+		$("#"+table1+" td,#"+table2+" td").each(function(index){
+		    var hellp = $(this).html();
+		    if(($(this).html().localeCompare(field1)==0 || $(this).html().localeCompare(field2) == 0) && !$(this).hasClass("primaryKey")){
+			$(this).addClass("foreignKey");
+		    }
+		});
+		
+		enforceConstraint(table1, field1, table2, field2, constraint);
+
+
+		$("#status").html("success");
+	    }
+	});
+    } else {
+	$("#menu").remove();
+    }
+    addConstraint = !addConstraint;
 }
 
 function rmConstraint(event, table1, field1, table2, field2, constraint) {
@@ -333,7 +382,7 @@ function rmConstraint(event, table1, field1, table2, field2, constraint) {
 				    if (index != -1) {
 					constraints[table2][field2].splice(index, 1);
 				    }
-				    
+
 				    $("#status").html("yeay");
 				}
 			    });
