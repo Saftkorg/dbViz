@@ -65,11 +65,7 @@ $(document).ready(function() {
     $('#create-database').click(function() {
 	$('#database-dialog').dialog('open');
     });
-<<<<<<< HEAD
-    
-    
 
-=======
 	$('#table-dialog form').submit(function(event) {
 		$.ajax({
 			type: 'POST',
@@ -88,7 +84,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		$("#table-dialog").dialog('close');
 	});
->>>>>>> 69614b0ae7a6c0f4f9a6aadfc3b8869feab6eafd
+
 });
 
 
