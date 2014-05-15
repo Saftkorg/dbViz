@@ -30,18 +30,34 @@ $(document).ready(function() {
     //	    numColumns = $("#numColumns"),
     //	    allFields = $([]).add(name).add(numColumns);
     //     tips = $( ".validateTips" );
-
+	var inputWrapper = $("#table-dialog fieldset");
+	var addButton = $("#addButton");
+	var x = inputWrapper.length;
+	var fieldCount = 1;
+	
+	$(addButton).click(function() {
+		fieldCount++;
+		$(inputWrapper).append('Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>'
+		    + 'Column type: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>');
+		x++;
+    });
+	
     $("#table-dialog").dialog({
 	autoOpen: false,
 	height: 300,
-	width: 350,
+	width: 300,
 	modal: true,
 	close: function() {
-	    $("#table-dialog fieldset input").val("").removeClass("ui-state-error");
+
+	    $( "#table-dialog fieldset input" ).val("").removeClass("ui-state-error");
+		$("#table-dialog fieldset").empty();
+		fieldCount = 1;
+		$(inputWrapper).append('Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>'
+		    + 'Column type: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>');
+
 	}
-    });
-
-
+	});
+	
     $('#create-table').click(function() {
 	$('#table-dialog').dialog('open');
     });
@@ -49,9 +65,30 @@ $(document).ready(function() {
     $('#create-database').click(function() {
 	$('#database-dialog').dialog('open');
     });
+<<<<<<< HEAD
     
     
 
+=======
+	$('#table-dialog form').submit(function(event) {
+		$.ajax({
+			type: 'POST',
+			url: 'createtable.php',
+			data: $(this).serialize()
+			}).done(function(data) {
+				var response = jQuery.parseJSON(data);
+				if(typeof (response.tableHTML) != "undefined") {
+					$(response.tableHTML).insertAfter("#menuContainer");
+				} else {
+					$("#status").html("Create Table Failed");
+				}
+			})
+			
+			;
+		event.preventDefault();
+		$("#table-dialog").dialog('close');
+	});
+>>>>>>> 69614b0ae7a6c0f4f9a6aadfc3b8869feab6eafd
 });
 
 
@@ -157,6 +194,7 @@ function enforceConstraint(table1,field1,table2,field2, constraint) {
 
 function showTables(str) {
     db = str;
+	$('[name="db"]').val(db);
     $("g").empty();
     $("#txtCont table").remove();
     constraints = [];
