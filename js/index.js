@@ -52,8 +52,8 @@ $(document).ready(function() {
 	    $( "#table-dialog fieldset input" ).val("").removeClass("ui-state-error");
 		$("#table-dialog fieldset").empty();
 		fieldCount = 1;
-		$(inputWrapper).append('Column Name: <input type="text" name="columnName' + fieldCount + '" class="name ui-widget-content ui-corner-all" /><br>'
-		    + 'Column type: <input type="text" name="columnType' + fieldCount + '" class="name ui-widget-content ui-corner-all" /><br>');
+		$(inputWrapper).append('Column Name: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>'
+		    + 'Column type: <input type="text" name="columnNames[]" class="name ui-widget-content ui-corner-all" /><br>');
 
 	}
 	});
@@ -65,7 +65,24 @@ $(document).ready(function() {
     $('#create-database').click(function() {
 	$('#database-dialog').dialog('open');
     });
-
+	$('#table-dialog form').submit(function(event) {
+		$.ajax({
+			type: 'POST',
+			url: 'createtable.php',
+			data: $(this).serialize()
+			}).done(function(data) {
+				var response = jQuery.parseJSON(data);
+				if(typeof (response.tableHTML) != "undefined") {
+					$(response.tableHTML).insertAfter("#menuContainer");
+				} else {
+					$("#status").html("Create Table Failed");
+				}
+			})
+			
+			;
+		event.preventDefault();
+		$("#table-dialog").dialog('close');
+	});
 });
 
 
