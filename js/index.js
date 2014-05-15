@@ -103,6 +103,14 @@ function scroll(e) {
 }
 
 function enforceConstraint(table1,field1,table2,field2, constraint) {
+    
+    var x1 = 0;
+    var x2 = 0;
+    
+    
+    
+    
+    
     var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     newLine.setAttribute('x1', '0');
     newLine.setAttribute('y1', '0');
