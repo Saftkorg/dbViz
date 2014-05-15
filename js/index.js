@@ -83,6 +83,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		$("#table-dialog").dialog('close');
 	});
+	
 });
 
 
@@ -290,6 +291,7 @@ function showTables(str) {
 	});
 
 	//constraints = constraints.concat(response.data);
+	addRemoveToAllTables();
     }
     );
 
@@ -422,6 +424,33 @@ function rmConstraint(event, table1, field1, table2, field2, constraint) {
 		}
 	    });
 
+}
+
+function addRemoveToAllTables() {
+	var tables = $('#txtCont table');
+	for (var i=tables.length-1; i>=0;i-=1) {
+		addRemoveToTable(tables[i]);
+	}
+}
+
+function addRemoveToTable(table) {
+		var btn = document.createElement('input');
+		btn.type = "button";
+		btn.className = "btn";
+		btn.value = "Remove";
+//		btn.onclick = (function(entry) {return function() {chooseUser(entry);}})(entry);
+		btn.onclick = (function() {
+		$.post(
+	    "rmTable.php",
+	    {'table': table.id, 'db': db},
+    function(data) {
+		var response = jQuery.parseJSON(data);
+		if (typeof (response.success) != "undefined") {
+			$("#" + table.id).remove();	
+			}
+		});
+	});
+	table.appendChild(btn);
 }
 function testPost() {
     $("#status").append("yeay");
