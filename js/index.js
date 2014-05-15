@@ -294,16 +294,6 @@ function showTables(str) {
 		    collision: "fit"
 		});
 
-		/*
-		 var sendThis = {'choices[]': ["jon", "susan"]};
-		 var posting = $.post("phpinfo.php", sendThis);
-		 posting.done(function(data) {
-		 var content = $(data).find("#c");
-		 var cont = $("div").find("#status");
-		 $("#status").append(content);
-		 });
-		 */
-
 		//show and move menu?
 	    }
 	});
@@ -313,28 +303,7 @@ function showTables(str) {
     );
 
 
-//    if (window.XMLHttpRequest) {
-//	// code for IE7+, Firefox, Chrome, Opera, Safari
-//	xmlhttp = new XMLHttpRequest();
-//    } else { // code for IE6, IE5
-//	xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-//    }
-//    xmlhttp.onreadystatechange = function() {
-//	if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-//	    document.getElementById("txtCont").innerHTML = xmlhttp.responseText;
-//	    $('#txtCont table').draggable({
-//		drag: function(event) {
-//		    $('#status').text(event.target.style.top);
-//		    var line = $('line')[0];
-//		    $('line')[0].attributes.y1.value = parseInt(event.target.style.top);
-//		    $('line')[0].attributes.x1.value = parseInt(event.target.style.left);
-//		    //$( 'line' ).x1 = event.clientX;
-//		}});
-//	}
-//    };
-//    xmlhttp.open("POST", "gettables.php" , true);
-//    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-//    xmlhttp.send("q=" + str);
+
 }
 
 function adConstraint(table2, field2) {

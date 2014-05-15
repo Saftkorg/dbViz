@@ -1,5 +1,6 @@
 <?php
-$con = mysqli_connect('127.0.0.1', 'test1', 'test1', strval($_POST["db"]));
+$db = strval($_POST["db"]);
+$con = mysqli_connect('127.0.0.1', 'test1', 'test1', $db);
 // Check connection
 if (mysqli_connect_errno()) {
   echo "Failed to connect to MySQL: " . mysqli_connect_error();
@@ -16,10 +17,10 @@ $sql = $sql . ");";
 
 // Execute query
 if (mysqli_query($con,$sql)) {
-    $html = "<table id=\"" . $value . "\" class=\"table\">"
-	    . "<thead><tr><th>" . $value . "</th></tr></thead><tbody>";
+    $html = "<table id=\"" . $tableName . "\" class=\"table\">"
+	    . "<thead><tr><th>" . $tableName . "</th></tr></thead><tbody>";
 
-    $sql = "SHOW KEYS FROM " . $value . " WHERE Key_name = 'PRIMARY'";
+    $sql = "SHOW KEYS FROM " . $tableName . " WHERE Key_name = 'PRIMARY'";
     $result = mysqli_query($con, $sql);
     $primaryKeys = array();
     while ($row = mysqli_fetch_array($result)) {
@@ -28,19 +29,19 @@ if (mysqli_query($con,$sql)) {
     }
     //$sql = "SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '" . $value ."'";
     $sql = "SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME "
-	    . "FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_NAME = '"
-	    . $value . "' AND REFERENCED_TABLE_NAME IS NOT NULL";
+	    . "FROM information_schema.KEY_COLUMN_USAGE WHERE CONSTRAINT_SCHEMA  = '" . $db . "' AND TABLE_NAME = '"
+	    . $tableName . "' AND REFERENCED_TABLE_NAME IS NOT NULL";
     $result = mysqli_query($con, $sql);
     $tmpForeign;
     while ($row = mysqli_fetch_array($result)) {
 	//echo "\t foreignkey: " . $row['COLUMN_NAME'] . " ref to: " . $row['REFERENCED_TABLE_NAME'] . " -> " . $row['REFERENCED_COLUMN_NAME'] . "</br>";
-	$tmpForeign[$value][$row['COLUMN_NAME']] = array(
+	$tmpForeign[$tableName][$row['COLUMN_NAME']] = array(
 	    "table" => $row['REFERENCED_TABLE_NAME'],
 	    "column" => $row['REFERENCED_COLUMN_NAME'],
 	    "constraint" => $row['CONSTRAINT_NAME']);
     }
 
-    $sql = "SELECT * FROM " . $value . "";
+    $sql = "SELECT * FROM " . $tableName . "";
     $result = mysqli_query($con, $sql);
     $fields = mysqli_field_count($con);
     for ($j = 0; $j < $fields; $j++) {
@@ -48,7 +49,7 @@ if (mysqli_query($con,$sql)) {
 	$name = mysqli_fetch_field_direct($result, $j)->name;
 	if (in_array($name, $primaryKeys)) {
 	    $html .= " class=\"primaryKey\"";
-	} else if (isset($tmpForeign[$value]) && isset($tmpForeign[$value][$name])) {
+	} else if (isset($tmpForeign[$tableName]) && isset($tmpForeign[$tableName][$name])) {
 	    $html .= " class=\"foreignKey\"";
 	}
 

@@ -31,7 +31,7 @@ foreach ($tables as $i => $value) {
     }
     //$sql = "SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '" . $value ."'";
     $sql = "SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME "
-	    . "FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_NAME = '"
+	    . "FROM information_schema.KEY_COLUMN_USAGE WHERE CONSTRAINT_SCHEMA  = '" . $q . "' AND TABLE_NAME = '"
 	    . $value . "' AND REFERENCED_TABLE_NAME IS NOT NULL";
     $result = mysqli_query($con, $sql);
     $tmpForeign;
