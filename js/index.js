@@ -49,7 +49,8 @@ $(document).ready(function() {
     $('#create-database').click(function() {
 	$('#database-dialog').dialog('open');
     });
-
+    
+    
 
 });
 

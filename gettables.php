@@ -43,7 +43,7 @@ foreach ($tables as $i => $value) {
 	    "constraint" => $row['CONSTRAINT_NAME']);
     }
 
-    $sql = "SELECT * FROM " . $value . "";
+    $sql = "SELECT * FROM " . $value . ";";
     $result = mysqli_query($con, $sql);
     $fields = mysqli_field_count($con);
     for ($j = 0; $j < $fields; $j++) {
