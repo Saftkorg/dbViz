@@ -105,18 +105,27 @@ function scroll(e) {
 
 function enforceConstraint(table1,field1,table2,field2, constraint) {
     
-    var x1 = 0;
-    var x2 = 0;
+    var parent1Pos = $('#'+table1).position();
+    var parent2Pos = $('#'+table2).position();
     
+    var child1 = $('#'+table1 + " td").filter(function(idx){
+	return this.innerHTML == field1;
+    });
+    var child2 = $('#'+table2 + " td").filter(function(idx){
+	return this.innerHTML == field2;
+    });
+    
+    var child1Pos = $(child1[0]).position();
+    var child2Pos = $(child2[0]).position();
     
     
     
     
     var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    newLine.setAttribute('x1', '0');
-    newLine.setAttribute('y1', '0');
-    newLine.setAttribute('x2', '0');
-    newLine.setAttribute('y2', '0');
+    newLine.setAttribute('x1', (child1Pos.left));
+    newLine.setAttribute('y1', (child1Pos.top));
+    newLine.setAttribute('x2', (child2Pos.left));
+    newLine.setAttribute('y2', (child2Pos.top));
     $("#svgGroup").append(newLine);
 
     if (!(table1 in constraints)) {
